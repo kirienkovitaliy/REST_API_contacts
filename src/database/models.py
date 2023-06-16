@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, func
+from sqlalchemy import Column, Integer, String, Date, func
 from sqlalchemy.sql.sqltypes import DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -12,5 +12,5 @@ class Contact(Base):
     last_name = Column(String(20), nullable=False)
     email = Column(String(40), nullable=False, unique=True)
     phone_number = Column(String(40), nullable=False)
-    birthday = Column(String(20), nullable=False)
+    birthday = Column(Date, nullable=False)
     created_at = Column('created_at', DateTime, default=func.now())

@@ -1,13 +1,13 @@
-from datetime import datetime
-from pydantic import BaseModel, Field
+from datetime import date, datetime
+from pydantic import BaseModel, Field, EmailStr
 
 
 class ContactBase(BaseModel):
-    first_name: str = Field(max_length=20)
-    last_name: str = Field(max_length=20)
-    email: str = Field(max_length=40)
-    phone_number: str = Field(max_length=40)
-    birthday: str = Field(max_length=20)
+    first_name: str = Field(min_length=3, max_length=20)
+    last_name: str = Field(min_length=3, max_length=20)
+    email: EmailStr
+    phone_number: str = Field(min_length=10, max_length=40)
+    birthday: date
     created_at: datetime
 
 
