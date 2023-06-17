@@ -1,5 +1,7 @@
+from datetime import date
 from typing import List
 
+from sqlalchemy import extract, or_
 from sqlalchemy.orm import Session
 
 from src.database.models import Contact
@@ -41,3 +43,23 @@ async def update_contact(contact_id: int, body: ContactUpdate, db: Session) -> C
         contact.birthday = body.birthday
         db.commit()
     return contact
+
+
+def search_contacts(query: str, db: Session):
+    contacts = db.query(Contact).filter(
+        or_(
+            Contact.first_name.ilike(f"%{query}%"),
+            Contact.last_name.ilike(f"%{query}%"),
+            Contact.email.ilike(f"%{query}%")
+        )
+    ).all()
+    return contacts
+
+
+def get_birthdays(db: Session, start_date: date, end_date: date) -> List[Contact]:
+    contacts = db.query(Contact).filter(
+        extract('month', Contact.birthday) == extract('month', start_date),
+        extract('day', Contact.birthday) >= extract('day', start_date),
+        extract('day', Contact.birthday) <= extract('day', end_date)
+    ).all()
+    return contacts
