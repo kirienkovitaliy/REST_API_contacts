@@ -1,13 +1,14 @@
-from typing import List
 from datetime import date, timedelta
+from typing import List
 
 from fastapi import APIRouter, HTTPException, Depends, status
+from fastapi_limiter.depends import RateLimiter
 from sqlalchemy.orm import Session
 
 from src.database.db import get_db
 from src.database.models import User, Role
-from src.schemas import ContactBase, ContactUpdate, ContactResponse
 from src.repository import contacts as repository_contacts
+from src.schemas import ContactBase, ContactUpdate, ContactResponse
 from src.services.auth import auth_service
 from src.services.roles import RoleAccess
 
@@ -19,7 +20,8 @@ allowed_operation_update = RoleAccess([Role.admin, Role.moderator])
 allowed_operation_remove = RoleAccess([Role.admin])
 
 
-@router.get("/", response_model=List[ContactResponse], dependencies=[Depends(allowed_operation_get)],
+@router.get("/", response_model=List[ContactResponse],
+            dependencies=[Depends(allowed_operation_get), Depends(RateLimiter(times=3, seconds=5))],
             description='Everyone can')
 async def read_contacts(skip: int = 0, limit: int = 100, db: Session = Depends(get_db),
                         current_user: User = Depends(auth_service.get_current_user)):
@@ -27,7 +29,8 @@ async def read_contacts(skip: int = 0, limit: int = 100, db: Session = Depends(g
     return contacts
 
 
-@router.get("/{contact_id}", response_model=ContactResponse, dependencies=[Depends(allowed_operation_get)],
+@router.get("/{contact_id}", response_model=ContactResponse,
+            dependencies=[Depends(allowed_operation_get), Depends(RateLimiter(times=3, seconds=5))],
             description='Everyone can')
 async def read_contact(contact_id: int, db: Session = Depends(get_db),
                        current_user: User = Depends(auth_service.get_current_user)):
@@ -38,7 +41,8 @@ async def read_contact(contact_id: int, db: Session = Depends(get_db),
 
 
 @router.post("/", response_model=ContactResponse, status_code=status.HTTP_201_CREATED,
-             dependencies=[Depends(allowed_operation_create)], description='Everyone can')
+             dependencies=[Depends(allowed_operation_create), Depends(RateLimiter(times=3, seconds=3))],
+             description='Everyone can')
 async def create_contact(body: ContactBase, db: Session = Depends(get_db),
                          current_user: User = Depends(auth_service.get_current_user)):
     return await repository_contacts.create_contact(body, db)
@@ -64,7 +68,8 @@ async def remove_contact(contact_id: int, db: Session = Depends(get_db),
     return contact
 
 
-@router.get("/contacts/search", response_model=List[ContactResponse], dependencies=[Depends(allowed_operation_get)],
+@router.get("/contacts/search", response_model=List[ContactResponse],
+            dependencies=[Depends(allowed_operation_get), Depends(RateLimiter(times=3, seconds=5))],
             description='Everyone can')
 async def search_contacts(query: str, db: Session = Depends(get_db),
                           current_user: User = Depends(auth_service.get_current_user)):
@@ -84,7 +89,8 @@ async def search_contacts(query: str, db: Session = Depends(get_db),
     return response_contacts
 
 
-@router.get("/contacts/birthdays", response_model=List[ContactResponse], dependencies=[Depends(allowed_operation_get)],
+@router.get("/contacts/birthdays", response_model=List[ContactResponse],
+            dependencies=[Depends(allowed_operation_get), Depends(RateLimiter(times=3, seconds=5))],
             description='Everyone can')
 async def get_birthdays(start_date: date = date.today(), db: Session = Depends(get_db),
                         current_user: User = Depends(auth_service.get_current_user)):
