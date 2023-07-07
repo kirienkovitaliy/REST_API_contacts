@@ -11,6 +11,14 @@ app = FastAPI()
 
 @app.on_event("startup")
 async def startup():
+    """
+    The startup function is called when the application starts up.
+    It's a good place to initialize things that are needed by your app,
+    such as connecting to databases or initializing caches.
+
+    :return: A fastapilimiter instance
+    :doc-author: Trelent
+    """
     r = await redis.Redis(host=settings.redis_host, port=settings.redis_port, db=0)
     await FastAPILimiter.init(r)
 

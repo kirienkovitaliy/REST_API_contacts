@@ -73,6 +73,18 @@ async def remove_contact(contact_id: int, db: Session = Depends(get_db),
             description='Everyone can')
 async def search_contacts(query: str, db: Session = Depends(get_db),
                           current_user: User = Depends(auth_service.get_current_user)):
+    """
+    The search_contacts function searches for contacts in the database.
+        Args:
+            query (str): The search query to use when searching for contacts.
+            db (Session, optional): SQLAlchemy Session. Defaults to Depends(get_db).
+
+    :param query: str: Search for contacts in the database
+    :param db: Session: Get the database session from the dependency injection
+    :param current_user: User: Get the current user from the database
+    :return: A list of contactresponse objects
+    :doc-author: Trelent
+    """
     contacts = repository_contacts.search_contacts(query, db)
     response_contacts = []
     for contact in contacts:
@@ -94,6 +106,15 @@ async def search_contacts(query: str, db: Session = Depends(get_db),
             description='Everyone can')
 async def get_birthdays(start_date: date = date.today(), db: Session = Depends(get_db),
                         current_user: User = Depends(auth_service.get_current_user)):
+    """
+    The get_birthdays function returns a list of contacts with birthdays in the next 7 days.
+
+    :param start_date: date: Specify the start date of the range
+    :param db: Session: Get a database session
+    :param current_user: User: Get the current user from the database
+    :return: A list of contacts with birthdays in the next week
+    :doc-author: Trelent
+    """
     end_date = date.today() + timedelta(days=7)
     contacts = repository_contacts.get_birthdays(db, start_date, end_date)
     return contacts

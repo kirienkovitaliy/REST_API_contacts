@@ -10,6 +10,14 @@ async def get_user_by_email(email: str, db: Session) -> User | None:
 
 
 async def create_user(body: UserModel, db: Session):
+    """
+    The create_user function creates a new user in the database.
+
+    :param body: UserModel: Get the data from the request body
+    :param db: Session: Pass the database session to the function
+    :return: The new user object
+    :doc-author: Trelent
+    """
     g = Gravatar(body.email)
     new_user = User(**body.dict(), avatar=g.get_image())
     db.add(new_user)

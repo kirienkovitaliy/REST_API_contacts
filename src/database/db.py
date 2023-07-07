@@ -13,6 +13,14 @@ DBSession = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 # Dependency
 def get_db():
+    """
+    The get_db function is a context manager that will automatically close the database session at the end of a request.
+    It also handles any exceptions that occur during the request, rolling back any changes to the database if an
+    exception occurs.
+
+    :return: A database connection, which is used by the create_user function
+    :doc-author: Trelent
+    """
     db = DBSession()
     try:
         yield db
