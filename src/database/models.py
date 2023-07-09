@@ -1,7 +1,7 @@
 import enum
 
 from sqlalchemy import Boolean, Column, Integer, String, Date, func, Enum
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.sql.sqltypes import DateTime
 
 Base = declarative_base()

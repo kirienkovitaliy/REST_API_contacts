@@ -6,6 +6,7 @@ from starlette.middleware.cors import CORSMiddleware
 from src.conf.config import settings
 from src.routes import contacts, auth, users
 
+
 app = FastAPI()
 
 
