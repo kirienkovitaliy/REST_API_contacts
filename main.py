@@ -2,6 +2,7 @@ import redis.asyncio as redis
 from fastapi import FastAPI
 from fastapi_limiter import FastAPILimiter
 
+
 from starlette.middleware.cors import CORSMiddleware
 
 from src.conf.config import settings

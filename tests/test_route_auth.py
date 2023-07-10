@@ -16,7 +16,7 @@ def test_create_user(client, user, monkeypatch):
     assert "id" in data["user"]
 
 
-def repeat_create_user(client, user):
+def test_repeat_create_user(client, user):
     response = client.post(
         "/api/auth/signup",
         json=user,
@@ -26,7 +26,7 @@ def repeat_create_user(client, user):
     assert data["detail"] == "Account already exists"
 
 
-def login_user_not_confirmed(client, user):
+def test_login_user_not_confirmed(client, user):
     response = client.post(
         "/api/auth/login",
         data={"username": user.get('email'), "password": user.get('password')},
@@ -36,7 +36,7 @@ def login_user_not_confirmed(client, user):
     assert data["detail"] == "Email not confirmed"
 
 
-def login_user(client, session, user):
+def test_login_user(client, session, user):
     current_user: User = session.query(User).filter(User.email == user.get('email')).first()
     current_user.confirmed = True
     session.commit()
@@ -49,7 +49,7 @@ def login_user(client, session, user):
     assert data["token_type"] == "bearer"
 
 
-def login_wrong_password(client, user):
+def test_login_wrong_password(client, user):
     response = client.post(
         "/api/auth/login",
         data={"username": user.get('email'), "password": 'password'},
@@ -59,7 +59,7 @@ def login_wrong_password(client, user):
     assert data["detail"] == "Invalid password"
 
 
-def login_wrong_email(client, user):
+def test_login_wrong_email(client, user):
     response = client.post(
         "/api/auth/login",
         data={"username": 'email', "password": user.get('password')},
